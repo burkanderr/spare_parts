@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="297.000mm" height="210.000mm" viewBox="0.000000 0.000000 297.000000 210.000000" stroke-linejoin="round" stroke-linecap="round" fill="none" fill-rule="evenodd"><desc>Composer Export</desc><script type="text/ecmascript"><![CDATA[
+if(typeof(top) != "undefined")
+{
+	top.ShowPaper = ShowPaper;
+}
+function ShowHotSpot(evt,hotspotid)
+{
+	var svgDocument = evt.target.ownerDocument;
+	var strId = "hotspot."+hotspotid;
+	var hotspot = svgDocument.getElementById(strId);
+	if(hotspot)
+		hotspot.setAttribute("opacity",".5");
+}
+function HideHotSpot(evt,hotspotid)
+{
+	var svgDocument = evt.target.ownerDocument;
+	var strId = "hotspot."+hotspotid;
+	var hotspot = svgDocument.getElementById(strId);
+	if(hotspot)
+		hotspot.setAttribute("opacity","0");
+
+	var toolTip = svgDocument.getElementById('ToolTip');
+	if(toolTip)
+		toolTip.setAttribute("visibility","hidden");
+}
+function ShowToolTip(evt,hotspotid,strTooltip)
+{
+	if(strTooltip=="")
+	return;
+
+	// change text
+	var svgDocument = evt.target.ownerDocument;
+	var tiptext = svgDocument.getElementById('ToolTipText');
+	if( !tiptext )
+	return;
+	tiptext.firstChild.nodeValue = " " + strTooltip + "  " ;
+
+	// show tooltip before, else some refresh issue
+
+	var toolTip = svgDocument.getElementById('ToolTip');
+	if(!toolTip)
+	return;
+
+	toolTip.setAttribute("visibility","visible");
+	toolTip.setAttribute("opacity",".95");
+
+	// move tooltip
+	// get viewbox
+
+	var root = svgDocument.documentElement;
+	var vbox = (root.getAttribute("viewBox")).split(' ');
+	var x0 = parseFloat(vbox[0]);
+	var y0 = parseFloat(vbox[1]);
+	var vboxW = parseFloat(vbox[2]);
+	var vboxH = parseFloat(vbox[3]);
+
+	// get default width of svg
+
+	var strW = root.getAttribute("width");
+	var svgW = parseFloat(strW);
+	if(strW.indexOf('mm') != -1)
+	svgW *= 3.779;
+
+	var strH = root.getAttribute("height");
+	var svgH = parseFloat(strH);
+	if(strH.indexOf('mm') != -1)
+	svgH *= 3.779;  	// 96 dpi  -> 96/25.4 = 3.779
+
+	// update the viewbox / width / height if svg is embedded in html with zoom fit all
+	var realx0 = x0;
+	var realy0 = y0;
+	var realvboxW = vboxW;
+	var realvboxH = vboxH;
+	var realsvgW = svgW;
+	var realsvgH = svgH;
+
+	if ((typeof(top) == "undefined") || (typeof(top.svgctl1) != "undefined")) // embedded in html
+	{
+		// get window size in pxl
+
+		svgW = window.innerWidth;
+		svgH = window.innerHeight;
+
+		// calculate real viewbox
+
+		realsvgW = svgW;
+		realsvgH = svgH;
+		if((svgW / svgH) > (vboxW / vboxH))
+		{
+			realvboxW = (vboxH * svgW) / svgH;
+			realvboxH = vboxH;
+			realx0 = x0 - (realvboxW - vboxW)/2 ;
+		}
+		else
+		{
+			realvboxH = (vboxW * svgH) / svgW;
+			realvboxW = vboxW;
+			realy0 = y0 - (realvboxH - vboxH)/2 ;
+		}
+	}
+
+	// get user zoom/pan
+
+	var newScale = root.currentScale;
+	var translation = root.currentTranslate;
+
+	// transform pxl to user unit
+
+	var xPos = (((evt.clientX+10- translation.x)/newScale) * realvboxW)/realsvgW  + realx0 ;
+	var yPos = (((evt.clientY+5- translation.y)/newScale) * realvboxH)/ realsvgH  + realy0 ;
+	var scaleForWidth = ( (1 / newScale) * realvboxH) / realsvgH;
+
+	// move tooltip
+
+	toolTip.setAttribute("transform", "translate(" + xPos + "," + yPos + ")" );
+
+	// resize tooltip
+
+	var fontsize = 12;
+	tiptext.setAttribute("font-size",fontsize*scaleForWidth);
+	tiptext.setAttribute("y", fontsize*scaleForWidth);
+	var tipBG = svgDocument.getElementById('ToolTipBG');
+	var outline = tiptext.getBBox();
+	if(tipBG)
+	{
+		tipBG.setAttribute("stroke-width", 1*scaleForWidth);
+		tipBG.setAttribute("width", Number(outline.width) );
+		tipBG.setAttribute("height", Number(outline.height) + fontsize*.5*scaleForWidth );
+	}
+	var ToolTipShadow = svgDocument.getElementById('ToolTipShadow');
+	if(ToolTipShadow)
+	{
+		ToolTipShadow.setAttribute("width", Number(outline.width) );
+		ToolTipShadow.setAttribute("height", Number(outline.height) + fontsize*.5*scaleForWidth );
+		ToolTipShadow.setAttribute("x", 3*scaleForWidth);
+		ToolTipShadow.setAttribute("y", 3*scaleForWidth);
+	}
+}
+function ShowPaper()
+{
+  var svgDocument = getDocument();
+  var paper = svgDocument.getElementById("paperID");
+  if(paper)
+  {
+    paper.setAttribute("transform","scale(1)");
+    paper.setAttribute("opacity","1");
+    paper.setAttribute("visibility","visible");
+  }
+  var svg = svgDocument.getRootElement();
+  if(svg)
+  {
+    svg.setAttribute("width","307.000mm");
+    svg.setAttribute("height","220.000mm");
+    svg.setAttribute("viewBox","-5.000000 -5.000000 307.000000 220.000000");
+  }
+}
+]]></script><defs/><g><g/><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,15.00L47.09,15.00L47.09,22.34L14.00,22.34z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.92" y="20.04" font-size="4.47" opacity="1.00" font-family="MS Shell Dlg">SPARE PARTS</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,28.00L61.09,28.00L61.09,34.21L14.00,34.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="32.27" font-size="3.76" opacity="1.00" font-family="MS Shell Dlg">1)Electric Locking Solenoid</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,38.00L64.49,38.00L64.49,44.21L14.00,44.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="42.27" font-size="3.79" opacity="1.00" font-family="MS Shell Dlg">2)Electric Drop Arm Solenoid</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,58.00L63.52,58.00L63.52,64.21L14.00,64.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="62.27" font-size="3.80" opacity="1.00" font-family="MS Shell Dlg">4)Self Centering Mechanism</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,68.00L62.77,68.00L62.77,74.21L14.00,74.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="72.27" font-size="3.79" opacity="1.00" font-family="MS Shell Dlg">5)Hydraulic Shock Absorber</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,78.00L61.47,78.00L61.47,84.21L14.00,84.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="82.27" font-size="3.79" opacity="1.00" font-family="MS Shell Dlg">6)Locking Cam Mechanism</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,88.00L61.24,88.00L61.24,94.21L14.00,94.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="92.27" font-size="3.79" opacity="1.00" font-family="MS Shell Dlg">7)LED Way-Mode Indicator</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,48.00L66.39,48.00L66.39,54.21L14.00,54.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="52.27" font-size="3.79" opacity="1.00" font-family="MS Shell Dlg">3)Contactless Position Sensor</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,98.00L54.66,98.00L54.66,104.21L14.00,104.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="102.27" font-size="3.79" opacity="1.00" font-family="MS Shell Dlg">8) Optima Control Card</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,108.00L27.24,108.00L27.24,114.21L14.00,114.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="112.27" font-size="3.76" opacity="1.00" font-family="MS Shell Dlg">9)Fuse</text></g></g><g><g/><g><path style="stroke:#000000;stroke-width:0.250;fill:#ffffff" d="M14.00,118.00L48.59,118.00L48.59,124.21L14.00,124.21z"/><text xml:space="preserve" fill="#000000" stroke-width="0" x="14.78" y="122.27" font-size="3.75" opacity="1.00" font-family="MS Shell Dlg">10)Proximity Switch</text></g></g><g><g/><g><image x="97.606369" y="43.046322" height="120.796700" width="142.916901" xlink:href="8_files/92a47a1a7f147023_image_0.jpg"/></g></g><g id="paperID" visibility="hidden" opacity="0.00" transform="scale(0.000100)"><path style="stroke:#000000;stroke-width:0.500;fill:#e6e6e6;fill-rule:evenodd" d="M-2000.00,-2000.00L2297.00,-2000.00L2297.00,2210.00L-2000.00,2210.00zM0.00,0.00L297.00,0.00L297.00,210.00L0.00,210.00z"/><path style="fill:#000000;fill-opacity:0.118" d="M3.00,210.00L297.00,210.00L297.00,3.00L300.00,3.00L300.00,213.00L3.00,213.00z"/></g><g id="hotspot.0" ident="" onmouseover="ShowHotSpot(evt,&apos;0&apos;)" onmouseout="HideHotSpot(evt,&apos;0&apos;)" onmousemove="ShowToolTip(evt,&apos;0&apos;,&quot;Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of 2D Text 1&quot;)" opacity="0"><a xlink:href="3.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M66.60,47.84L66.60,54.43L13.86,54.38L13.81,47.83z"/></a></g><g id="hotspot.1" ident="" onmouseover="ShowHotSpot(evt,&apos;1&apos;)" onmouseout="HideHotSpot(evt,&apos;1&apos;)" onmousemove="ShowToolTip(evt,&apos;1&apos;,&quot;Copy 1 of Copy 1 of Copy 1 of Copy 1 of 2D Text 1&quot;)" opacity="0"><a xlink:href="6.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M61.66,77.81L61.66,84.40L13.81,84.41L13.81,77.81z"/></a></g><g id="hotspot.2" ident="" onmouseover="ShowHotSpot(evt,&apos;2&apos;)" onmouseout="HideHotSpot(evt,&apos;2&apos;)" onmousemove="ShowToolTip(evt,&apos;2&apos;,&quot;Copy 1 of Copy 1 of Copy 1 of 2D Text 1&quot;)" opacity="0"><a xlink:href="5.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M63.09,67.93L63.07,74.36L13.81,74.36L13.86,67.82L62.91,67.74z"/></a></g><g id="hotspot.3" ident="" onmouseover="ShowHotSpot(evt,&apos;3&apos;)" onmouseout="HideHotSpot(evt,&apos;3&apos;)" onmousemove="ShowToolTip(evt,&apos;3&apos;,&quot;Copy 1 of Copy 1 of 2D Text 1&quot;)" opacity="0"><a xlink:href="2.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M64.83,37.93L64.78,44.33L13.81,44.38L13.81,37.79L64.68,37.77z"/></a></g><g id="hotspot.4" ident="" onmouseover="ShowHotSpot(evt,&apos;4&apos;)" onmouseout="HideHotSpot(evt,&apos;4&apos;)" onmousemove="ShowToolTip(evt,&apos;4&apos;,&quot;Copy 1 of 2D Text 1&quot;)" opacity="0"><a xlink:href="1.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M61.31,27.74L61.25,34.45L13.86,34.45L13.86,27.79z"/></a></g><g id="hotspot.5" ident="" onmouseover="ShowHotSpot(evt,&apos;5&apos;)" onmouseout="HideHotSpot(evt,&apos;5&apos;)" onmousemove="ShowToolTip(evt,&apos;5&apos;,&quot;Copy 1 of Copy 1 of 2D Text 1&quot;)" opacity="0"><a xlink:href="4.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M63.79,57.87L63.72,64.42L13.86,64.43L13.86,57.77L63.63,57.71z"/></a></g><g id="hotspot.6" ident="" onmouseover="ShowHotSpot(evt,&apos;6&apos;)" onmouseout="HideHotSpot(evt,&apos;6&apos;)" onmousemove="ShowToolTip(evt,&apos;6&apos;,&quot;Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of 2D Text 1&quot;)" opacity="0"><a xlink:href="7.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M61.48,87.86L61.49,94.45L13.86,94.40L13.81,87.86z"/></a></g><g id="hotspot.7" ident="" onmouseover="ShowHotSpot(evt,&apos;7&apos;)" onmouseout="HideHotSpot(evt,&apos;7&apos;)" onmousemove="ShowToolTip(evt,&apos;7&apos;,&quot;Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of 2D Text 1&quot;)" opacity="0"><a xlink:href="9.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M27.46,107.79L27.45,114.38L13.81,114.38L13.81,107.79z"/></a></g><g id="hotspot.8" ident="" onmouseover="ShowHotSpot(evt,&apos;8&apos;)" onmouseout="HideHotSpot(evt,&apos;8&apos;)" onmousemove="ShowToolTip(evt,&apos;8&apos;,&quot;Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of Copy 1 of 2D Text 1&quot;)" opacity="0"><a xlink:href="10.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M48.79,117.84L48.79,124.43L13.86,124.38L13.81,117.83z"/></a></g><g id="hotspot.9" ident="" onmouseover="ShowHotSpot(evt,&apos;9&apos;)" onmouseout="HideHotSpot(evt,&apos;9&apos;)" onmousemove="ShowToolTip(evt,&apos;9&apos;,&quot;2D Text 1&quot;)" opacity="0"><a xlink:href="Spareparts.svg"><path style="fill:#00ff00;fill-rule:evenodd" d="M47.38,14.86L47.38,22.52L13.81,22.52L13.81,14.86z"/></a></g><g id="ToolTip" visibility="hidden" opacity="0" transform="translate(0,0)"><rect id="ToolTipShadow" opacity="0.20" fill="black" stroke="none" x="0" y="0" width="30" height="8"/><rect id="ToolTipBG" fill="#ffffe1" stroke="black" x="0" y="0" width="30" height="8"/><text xml:space="preserve" id="ToolTipText" fill="black" x="0" y="0" width="30" height="8">tooltip</text></g></g></svg>
